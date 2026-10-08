@@ -8,7 +8,27 @@ const {
     GatewayIntentBits
 } = require('discord.js');
 
+
+// ==================================================
+// Configurações
+// ==================================================
+
+const PORT = process.env.PORT || 3000;
+
+const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
+const DISCORD_CHANNEL_ID = process.env.DISCORD_CHANNEL_ID;
+
+
+// ==================================================
+// Aplicação
+// ==================================================
+
 const app = express();
+
+
+// ==================================================
+// Discord
+// ==================================================
 
 const client = new Client({
     intents: [
@@ -17,22 +37,28 @@ const client = new Client({
 });
 
 
-// ---------- Configurações ----------
-const PORT = process.env.PORT || 3000;
+// ==================================================
+// Middlewares
+// ==================================================
 
-
-// ---------- Middlewares ----------
 app.use(cors());
 app.use(express.json());
 
 
-// ---------- Discord ----------
+// ==================================================
+// Eventos do Discord
+// ==================================================
+
 client.once('clientReady', () => {
     console.log(`Bot conectado como ${client.user.tag}`);
 });
 
 
-// ---------- API ----------
+// ==================================================
+// Rotas da API
+// ==================================================
+
+// Status do servidor
 app.get('/', (req, res) => {
     res.json({
         status: 'online',
@@ -41,14 +67,7 @@ app.get('/', (req, res) => {
 });
 
 
-// ---------- Inicialização ----------
-app.listen(PORT, () => {
-    console.log(`API rodando em http://localhost:${PORT}`);
-});
-
-client.login(process.env.DISCORD_TOKEN);
-
-// ---------- Rolar dado ----------
+// Rolar dado
 app.post('/rolar', async (req, res) => {
     try {
         const {
@@ -57,12 +76,15 @@ app.post('/rolar', async (req, res) => {
             valor
         } = req.body;
 
-        // Validação básica
+
+        // ---------- Validação básica ----------
+
         if (!personagem || !atributo || valor === undefined) {
             return res.status(400).json({
                 erro: 'personagem, atributo e valor são obrigatórios.'
             });
         }
+
 
         const valorNumerico = Number(valor);
 
@@ -76,16 +98,20 @@ app.post('/rolar', async (req, res) => {
             });
         }
 
-        // D10
+
+        // ---------- Rolagem ----------
+
         const rolagem = Math.floor(Math.random() * 10) + 1;
         const total = rolagem + valorNumerico;
 
-        // Buscar canal
+
+        // ---------- Discord ----------
+
         const canal = await client.channels.fetch(
-            process.env.DISCORD_CHANNEL_ID
+            DISCORD_CHANNEL_ID
         );
 
-        // Mensagem para o Discord
+
         const mensagem = [
             `╔══════════════════════╗`,
             `      🎲 **ROLAGEM**`,
@@ -99,14 +125,18 @@ app.post('/rolar', async (req, res) => {
             `📜 **Total:** ${total}`
         ].join('\n');
 
+
         await canal.send(mensagem);
 
-        // Resposta para a ficha
+
+        // ---------- Resposta para a ficha ----------
+
         res.json({
             personagem,
             atributo,
             valor: valorNumerico,
-            rolagem
+            rolagem,
+            total
         });
 
     } catch (erro) {
@@ -117,3 +147,14 @@ app.post('/rolar', async (req, res) => {
         });
     }
 });
+
+
+// ==================================================
+// Inicialização
+// ==================================================
+
+app.listen(PORT, () => {
+    console.log(`API rodando em http://localhost:${PORT}`);
+});
+
+client.login(DISCORD_TOKEN);
