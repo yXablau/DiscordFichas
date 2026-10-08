@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ficha RPG — Dark Fantasy</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Crimson+Text:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="page">
+
+        <!-- =====================================================
+             CABEÇALHO
+        ====================================================== -->
+        <header class="header">
+            <div class="header-symbol">☩</div>
+            <div class="header-title">
+                <h1>FICHA DE PERSONAGEM</h1>
+                <p>xxx</p>
+            </div>
+            <div class="header-actions">
+                <button type="button" class="header-button" id="exportSheet" title="Exportar ficha">↓ Exportar</button>
+                <button type="button" class="header-button" id="importSheet" title="Importar ficha">↑ Importar</button>
+                <input type="file" id="importFile" accept=".json,application/json" hidden>
+            </div>
+        </header>
+
+        <!-- =====================================================
+             IDENTIDADE
+        ====================================================== -->
+        <section class="panel">
+            <div class="panel-title"><span>IDENTIDADE</span></div>
+
+            <div class="identity-grid">
+                <div class="field large">
+                    <label for="characterName">Nome do Personagem</label>
+                    <input type="text" id="characterName" placeholder="Nome">
+                </div>
+
+                <div class="field">
+                    <label for="race">Raça</label>
+                    <select id="race">
+                        <option value="">Selecione...</option>
+                        <option>Alqiin</option>
+                        <option>Aster</option>
+                        <option>Dakk</option>
+                        <option>Fyizari</option>
+                        <option>Hobgoblin</option>
+                        <option>Jurwintarr</option>
+                        <option>Mcarri</option>
+                        <option>Noh’i</option>
+                        <option>Nuulum</option>
+                        <option>Unk'varii</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="class">Classe</label>
+                    <input type="text" id="class" placeholder="Classe">
+                </div>
+
+                <div class="field">
+                    <label for="specialization">Especialização</label>
+                    <input type="text" id="specialization" placeholder="Especialização">
+                </div>
+
+                <div class="field">
+                    <label for="background">Passado</label>
+                    <select id="background">
+                        <option value="">Selecione...</option>
+                        <option>Adestrador de animais</option>
+                        <option>Criminoso</option>
+                        <option>Dono de Estabelecimento</option>
+                        <option>Estudioso</option>
+                        <option>Esquecido</option>
+                        <option>Marujo</option>
+                        <option>Membro da igreja</option>
+                        <option>Nobre</option>
+                        <option>Policial</option>
+                        <option>Político</option>
+                        <option>Refugiado</option>
+                        <option>Trabalhador</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="roots">Raízes</label>
+                    <select id="roots">
+                        <option value="">Selecione...</option>
+                        <option>Aatros</option>
+                        <option>Augertlâin</option>
+                        <option>Ayúmará</option>
+                        <option>Bulcanodor</option>
+                        <option>Chimus</option>
+                        <option>Elevanius</option>
+                        <option>Este</option>
+                        <option>Hërnan</option>
+                        <option>Nara</option>
+                        <option>Narse</option>
+                        <option>Noitrÿal</option>
+                        <option>Ólomenü</option>
+                        <option>Stivass</option>
+                        <option>Sem raízes</option>
+                        <option>País proibido</option>
+                        <option>Tembayuna</option>
+                        <option>Zinuvil</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="curse">Maldição</label>
+                    <select id="curse">
+                        <option value="">Nenhuma</option>
+                        <option>Beijo da Górgona</option>
+                        <option>Doença do Vazio</option>
+                        <option>Olhos Dourados</option>
+                        <option>Pele Meteórica</option>
+                        <option>Sangue Maldito</option>
+                        <option>Vampirismo</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <!-- =====================================================
+             ESTATÍSTICAS PRINCIPAIS
+        ====================================================== -->
+        <section class="stats-bar">
+            <div class="stat-box">
+                <span class="stat-label">VIDA</span>
+                <div class="health-value">
+                    <input type="number" id="currentHP" value="0" min="0">
+                    <span>/</span>
+                    <input type="number" id="maxHP" value="0" min="0">
+                </div>
+            </div>
+
+            <div class="stat-box">
+                <span class="stat-label">DANO BÔNUS</span>
+                <strong id="damageBonus">+0</strong>
+            </div>
+            <div class="stat-box">
+                <span class="stat-label">DURABILIDADE</span>
+                <div class="health-value">
+                    <input type="number" id="durability" value="0" min="0">
+                </div>
+            </div>
+        </section>
+
+        <!-- =====================================================
+             LAYOUT PRINCIPAL
+        ====================================================== -->
+        <div class="main-layout">
+
+            <!-- =================================================
+                 COLUNA PRINCIPAL
+            ================================================== -->
+            <main class="main-column">
+
+                <!-- =============================================
+                     HABILIDADES
+                ============================================== -->
+                <section class="panel">
+                    <div class="panel-title"><span>HABILIDADES</span></div>
+
+                    <div class="race-abilities" id="raceAbilities">
+                        <div class="ability-card">
+                            <div class="ability-header">
+                                <input type="text" placeholder="Nome da habilidade">
+                            </div>
+                            <textarea placeholder="Descrição da habilidade..."></textarea>
+                        </div>
+
+                        <div class="ability-card">
+                            <div class="ability-header">
+                                <input type="text" placeholder="Nome da habilidade">
+                            </div>
+                            <textarea placeholder="Descrição da habilidade..."></textarea>
+                        </div>
+
+                        <div class="ability-card">
+                            <div class="ability-header">
+                                <input type="text" placeholder="Nome da habilidade">
+                            </div>
+                            <textarea placeholder="Descrição da habilidade..."></textarea>
+                        </div>
+                    </div>
+
+                    <button type="button" class="add-button" id="addAbility">+ Adicionar Habilidade</button>
+                </section>
+            </main>
+
+            <!-- =================================================
+                 COLUNA LATERAL
+            ================================================== -->
+            <aside class="sidebar">
+
+                <!-- =============================================
+                     ATRIBUTOS
+                ============================================== -->
+                <section class="panel compact-panel">
+                    <div class="panel-title"><span>ATRIBUTOS</span></div>
+
+                    <div class="attributes-list">
+                        <div class="attribute">
+                            <span>ARCANO</span>
+                            <input type="number" value="0" class="attr-input" data-attr="ARCANO">
+                            <button type="button" class="roll-button attribute-roll" title="Rolar Arcano">🎲</button>
+                        </div>
+
+                        <div class="attribute">
+                            <span>FÉ</span>
+                            <input type="number" value="0" class="attr-input" data-attr="FÉ">
+                            <button type="button" class="roll-button attribute-roll" title="Rolar Fé">🎲</button>
+                        </div>
+
+                        <div class="attribute">
+                            <span>FORTITUDE</span>
+                            <input type="number" value="0" class="attr-input" data-attr="FORTITUDE">
+                            <button type="button" class="roll-button attribute-roll" title="Rolar Fortitude">🎲</button>
+                        </div>
+
+                        <div class="attribute">
+                            <span>INTELECTO</span>
+                            <input type="number" value="0" class="attr-input" data-attr="INTELECTO">
+                            <button type="button" class="roll-button attribute-roll" title="Rolar Intelecto">🎲</button>
+                        </div>
+
+                        <div class="attribute">
+                            <span>LÁBIA</span>
+                            <input type="number" value="0" class="attr-input" data-attr="LÁBIA">
+                            <button type="button" class="roll-button attribute-roll" title="Rolar Lábia">🎲</button>
+                        </div>
+
+                        <div class="attribute">
+                            <span>REFLEXO</span>
+                            <input type="number" value="0" id="reflex" class="attr-input" data-attr="REFLEXO">
+                            <button type="button" class="roll-button attribute-roll" title="Rolar Reflexo">🎲</button>
+                        </div>
+
+                        <div class="attribute">
+                            <span>SORTE</span>
+                            <input type="number" value="0" class="attr-input" data-attr="SORTE">
+                            <button type="button" class="roll-button attribute-roll" title="Rolar Sorte">🎲</button>
+                        </div>
+
+                        <div class="attribute">
+                            <span>VONTADE</span>
+                            <input type="number" value="0" class="attr-input" data-attr="VONTADE">
+                            <button type="button" class="roll-button attribute-roll" title="Rolar Vontade">🎲</button>
+                        </div>
+
+                        <div class="attribute">
+                            <span>TAMANHO</span>
+                            <input type="number" value="0" id="tam" class="attr-input" data-attr="TAMANHO">
+                            <button type="button" class="roll-button attribute-roll" title="Rolar Tamanho">🎲</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- =============================================
+                     PERÍCIAS
+                ============================================== -->
+                <section class="panel compact-panel">
+                    <div class="panel-title"><span>PERÍCIAS</span></div>
+
+                    <div class="skills-table-wrapper">
+                        <table class="skills-table">
+                            <thead>
+                                <tr>
+                                    <th>Perícia</th>
+                                    <th>Comp.</th>
+                                    <th>Bônus</th>
+                                    <th>Total</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="skillsBody"></tbody>
+                        </table>
+                    </div>
+
+                    <button type="button" class="add-button" id="addSkill">+ Adicionar Perícia</button>
+                </section>
+            </aside>
+        </div>
+
+        <!-- =====================================================
+             EQUIPAMENTOS
+        ====================================================== -->
+        <section class="panel equipment-panel">
+            <div class="panel-title"><span>EQUIPAMENTOS</span></div>
+
+            <div class="tabs">
+                <button type="button" class="tab active">⚔ Armas</button>
+                <button type="button" class="tab">➳ Projéteis</button>
+                <button type="button" class="tab">🛡 Armaduras</button>
+                <button type="button" class="tab">◈ Escudos</button>
+                <button type="button" class="tab">✦ Itens Gerais</button>
+            </div>
+
+            <!-- =============================================
+                 ARMAS
+            ============================================== -->
+            <div class="equipment-content active">
+                <div class="table-wrapper">
+                    <table class="equipment-table weapons-table">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Alcance</th>
+                                <th>Dano</th>
+                                <th>Dano Bônus</th>
+                                <th>Tipo de Dano</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="weaponsBody">
+                            <tr>
+                                <td><input type="text" placeholder="Espada Longa"></td>
+                                <td><input type="text" placeholder="1,5m"></td>
+                                <td><input type="text" placeholder="1d8"></td>
+                                <td><input type="text" placeholder="+0"></td>
+
+                                <td>
+                                    <select>
+                                        <option value="corte">Corte</option>
+                                        <option value="perfuracao">Perfuração</option>
+                                        <option value="esmagamento">Esmagamento</option>
+                                        <option value="fogo">Fogo</option>
+                                        <option value="frio">Frio</option>
+                                        <option value="eletricidade">Eletricidade</option>
+                                        <option value="acido">Ácido</option>
+                                        <option value="essencia">Essência</option>
+                                        <option value="trevas">Trevas</option>
+                                        <option value="luz">Luz</option>
+                                    </select>
+                                </td>
+
+                                <td>
+                                    <button type="button" class="delete-button" title="Remover arma">×</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <button type="button" class="add-button">+ Adicionar Arma</button>
+            </div>
+
+            <!-- =============================================
+                 PROJÉTEIS
+            ============================================== -->
+            <div class="equipment-content">
+                <div class="table-wrapper">
+                    <table class="equipment-table">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Quantidade</th>
+                                <th>Arma Compatível</th>
+                                <th>Peso</th>
+                                <th>Preço</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr>
+                                <td><input type="text" placeholder="Flecha"></td>
+                                <td><input type="number" value="10" min="0"></td>
+                                <td><input type="text" placeholder="Arco"></td>
+                                <td><input type="text" placeholder="0,1"></td>
+                                <td><input type="text" placeholder="1"></td>
+                                <td>
+                                    <button type="button" class="delete-button" title="Remover projétil">×</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <button type="button" class="add-button">+ Adicionar Projétil</button>
+            </div>
+
+            <!-- =============================================
+                 ARMADURAS
+            ============================================== -->
+            <div class="equipment-content">
+                <div class="table-wrapper">
+                    <table class="equipment-table">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Tipo</th>
+                                <th>Peso</th>
+                                <th>Durabilidade</th>
+                                <th>Preço</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr>
+                                <td><input type="text" placeholder="Armadura de Couro"></td>
+
+                                <td>
+                                    <select>
+                                        <option>Leve</option>
+                                        <option>Média</option>
+                                        <option>Pesada</option>
+                                    </select>
+                                </td>
+
+                                <td><input type="text" placeholder="5"></td>
+                                <td><input type="number" placeholder="10"></td>
+                                <td><input type="text" placeholder="40"></td>
+
+                                <td>
+                                    <button type="button" class="delete-button" title="Remover armadura">×</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <button type="button" class="add-button">+ Adicionar Armadura</button>
+            </div>
+
+            <!-- =============================================
+                 ESCUDOS
+            ============================================== -->
+            <div class="equipment-content">
+                <div class="table-wrapper">
+                    <table class="equipment-table">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Durabilidade</th>
+                                <th>Bônus para Aparar</th>
+                                <th>Requisito de Tamanho</th>
+                                <th>Preço</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr>
+                                <td><input type="text" placeholder="Escudo"></td>
+                                <td><input type="number" placeholder="10"></td>
+                                <td><input type="text" placeholder="+2"></td>
+                                <td><input type="text" placeholder="Médio"></td>
+                                <td><input type="text" placeholder="25"></td>
+
+                                <td>
+                                    <button type="button" class="delete-button" title="Remover escudo">×</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <button type="button" class="add-button">+ Adicionar Escudo</button>
+            </div>
+
+            <!-- =============================================
+                 ITENS GERAIS
+            ============================================== -->
+            <div class="equipment-content">
+                <textarea class="items-textarea" placeholder="Escreva aqui seus itens gerais...
+
+Exemplo:
+
+• Corda
+• Tochas
+• Frasco de óleo
+• Chave enferrujada
+• Livro antigo"></textarea>
+            </div>
+        </section>
+
+        <!-- =====================================================
+             BACKGROUND
+        ====================================================== -->
+        <section class="panel">
+            <div class="panel-title"><span>BACKGROUND</span></div>
+
+            <textarea class="large-textarea" placeholder="Conte a história do personagem...
+
+De onde ele veio?
+Quem eram seus pais?
+O que o levou a se aventurar?
+Quais acontecimentos marcaram sua vida?"></textarea>
+        </section>
+
+        <!-- =====================================================
+             ANOTAÇÕES
+        ====================================================== -->
+        <section class="panel">
+            <div class="panel-title"><span>ANOTAÇÕES</span></div>
+            <textarea class="large-textarea notes" placeholder="Anotações do jogador..."></textarea>
+        </section>
+
+        <!-- =====================================================
+             RODAPÉ
+        ====================================================== -->
+        <footer>
+            <span>XXX</span>
+            <span>✦</span>
+            <span>FICHA DE PERSONAGEM</span>
+        </footer>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
