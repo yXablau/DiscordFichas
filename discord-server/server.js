@@ -160,7 +160,7 @@ app.post('/rolar', async (req, res) => {
 // ==================================================
 
 app.listen(PORT, () => {
-    console.log(`API rodando em http://localhost:${PORT}`);
+    console.log(`API rodando na porta: ${PORT}`);
 });
 
 client.login(DISCORD_TOKEN);

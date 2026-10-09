@@ -796,7 +796,7 @@ async function rolarAtributo(
 
         const resposta =
             await fetch(
-                'https://discordfichas-api.xablau.blitz.cloud/rolar',
+                'https://discordfichas.xablau.blitz.cloud/rolar',
                 {
                     method: 'POST',
 
@@ -880,7 +880,7 @@ async function rolarPericia(
 
         const resposta =
             await fetch(
-                'https://discordfichas-api.xablau.blitz.cloud/rolar',
+                'https://discordfichas.xablau.blitz.cloud/rolar',
                 {
                     method: 'POST',
 
