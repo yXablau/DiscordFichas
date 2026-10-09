@@ -942,6 +942,79 @@ async function rolarPericia(
 
 }
 
+/* ---------- ROLAGEM DE DANO ---------- */
+function initDamageRoll() {
+    if (!weaponsBody) return;
+
+    weaponsBody.addEventListener('click', async (event) => {
+        const button = event.target.closest('.weapon-roll');
+
+        if (!button) return;
+
+        const row = button.closest('tr');
+
+        if (!row) return;
+
+        const nome = row.querySelector('.weapon-name')?.value.trim();
+        const alcance = row.querySelector('.weapon-range')?.value.trim();
+        const dano = row.querySelector('.weapon-damage')?.value.trim();
+        const aplicaBonus = row.querySelector('.weapon-bonus')?.checked ?? false;
+        const tipoDano = row.querySelector('.weapon-damage-type')?.value;
+
+        if (!nome) {
+            alert('Informe o nome da arma.');
+            return;
+        }
+
+        if (!dano || !/^\d+d\d+(?:\s*[+-]\s*\d+)?$/i.test(dano)) {
+            alert('Informe um dano válido, como 1d8 ou 2d6+3.');
+            return;
+        }
+
+        // O bônus já é calculado pelo script.
+        const danoBonus = aplicaBonus
+            ? bonusDMG?.textContent.trim()
+            : null;
+
+        const payload = {
+            personagem: characterName?.value.trim() || 'Personagem',
+            arma: nome,
+            alcance,
+            dano,
+            danoBonus,
+            tipoDano
+        };
+
+        try {
+            button.disabled = true;
+
+            const response = await fetch(
+                'https://discordfichas.xablau.blitz.cloud/rolar-dano',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.erro || data.message || 'Falha ao rolar o dano.');
+            }
+
+            console.log('Resultado da rolagem de dano:', data);
+        } catch (error) {
+            console.error('Erro ao rolar dano:', error);
+            alert(error.message || 'Não foi possível realizar a rolagem de dano.');
+        } finally {
+            button.disabled = false;
+        }
+    });
+}
+
 
 /* =========================================================
    EVENTOS DOS ATRIBUTOS

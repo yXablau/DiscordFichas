@@ -325,13 +325,20 @@
 
                         <tbody id="weaponsBody">
                             <tr>
-                                <td><input type="text" placeholder="Espada Longa"></td>
-                                <td><input type="text" placeholder="1,5m"></td>
-                                <td><input type="text" placeholder="1d8"></td>
-                                <td><input type="text" placeholder="+0"></td>
-
                                 <td>
-                                    <select>
+                                    <input type="text" class="weapon-name" placeholder="Espada Longa">
+                                </td>
+                                <td>
+                                    <input type="text" class="weapon-range" placeholder="1,5m">
+                                </td>
+                                <td>
+                                    <input type="text" class="weapon-damage" placeholder="1d8">
+                                </td>
+                                <td>
+                                    <input type="checkbox" class="weapon-bonus" title="Aplicar bônus de dano">
+                                </td>
+                                <td>
+                                    <select class="weapon-damage-type">
                                         <option value="corte">Corte</option>
                                         <option value="perfuracao">Perfuração</option>
                                         <option value="esmagamento">Esmagamento</option>
@@ -344,11 +351,15 @@
                                         <option value="luz">Luz</option>
                                     </select>
                                 </td>
-
                                 <td>
                                     <button type="button" class="delete-button" title="Remover arma">×</button>
+                                    <button type="button" class="roll-button weapon-roll" title="Rolar dano">🎲</button>
                                 </td>
                             </tr>
+                        </tbody>
+                        ```
+
+                        </tr>
                         </tbody>
                     </table>
                 </div>

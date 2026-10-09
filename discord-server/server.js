@@ -75,6 +75,115 @@ app.get('/', (req, res) => {
     });
 });
 
+/* ==================================================
+   Rolar dano de arma
+================================================== */
+
+app.post('/rolar-dano', async (req, res) => {
+    try {
+        const {
+            personagem,
+            arma,
+            alcance,
+            dano,
+            danoBonus,
+            tipoDano
+        } = req.body;
+
+        // ---------- Validação básica ----------
+
+        if (
+            typeof personagem !== 'string' || !personagem.trim() ||
+            typeof arma !== 'string' || !arma.trim() ||
+            typeof dano !== 'string' || !dano.trim() ||
+            typeof tipoDano !== 'string' || !tipoDano.trim()
+        ) {
+            return res.status(400).json({
+                erro: 'personagem, arma, dano e tipoDano são obrigatórios.'
+            });
+        }
+
+        // ---------- Rolagem do dano base ----------
+
+        const resultadoBase = rolarExpressao(dano);
+
+        // ---------- Rolagem do bônus opcional ----------
+
+        let resultadoBonus = {
+            total: 0,
+            resultados: []
+        };
+
+        if (
+            typeof danoBonus === 'string' &&
+            danoBonus.trim() !== '' &&
+            danoBonus.trim() !== '0'
+        ) {
+            resultadoBonus = rolarExpressao(danoBonus);
+        }
+
+        const total = resultadoBase.total + resultadoBonus.total;
+
+        // ---------- Mensagem do Discord ----------
+
+        const canal = await client.channels.fetch(DISCORD_CHANNEL_ID);
+
+        const mensagem = [
+            '╔══════════════════════╗',
+            `⚔️ **Rolagem de Dano: ${personagem.trim()}**`,
+            '╚══════════════════════╝',
+            `🗡️ **Arma:** ${arma.trim()}`,
+            alcance ? `📏 **Alcance:** ${alcance}` : null,
+            `💥 **Tipo de dano:** ${tipoDano}`,
+            '',
+            '**Dano base:**',
+            formatarResultados(resultadoBase.resultados),
+            resultadoBonus.resultados.length > 0
+                ? [
+                    '',
+                    '**Bônus de dano:**',
+                    formatarResultados(resultadoBonus.resultados)
+                ].join('\n')
+                : null,
+            '',
+            `🎯 **Dano total: ${total}**`
+        ].filter(item => item !== null).join('\n');
+
+        await canal.send(mensagem);
+
+        // ---------- Resposta para a ficha ----------
+
+        return res.json({
+            personagem: personagem.trim(),
+            arma: arma.trim(),
+            alcance: alcance || null,
+            tipoDano,
+            danoBase: resultadoBase,
+            danoBonus: resultadoBonus,
+            total
+        });
+
+    } catch (erro) {
+        console.error('Erro ao realizar rolagem de dano:', erro);
+
+        const erroDeValidacao = [
+            'Expressão de dano inválida.',
+            'Quantidade de dados ou faces fora do limite permitido.',
+            'Modificador numérico inválido.'
+        ];
+
+        if (erroDeValidacao.includes(erro.message)) {
+            return res.status(400).json({
+                erro: erro.message
+            });
+        }
+
+        return res.status(500).json({
+            erro: 'Erro interno ao realizar a rolagem de dano.'
+        });
+    }
+});
+
 
 // Rolar dado
 app.post('/rolar', async (req, res) => {
@@ -113,6 +222,88 @@ app.post('/rolar', async (req, res) => {
         const rolagem = Math.floor(Math.random() * 10) + 1;
         const total = rolagem + valorNumerico;
 
+        /* ==================================================
+                Auxiliares para rolagem de dano
+        ================================================== */
+
+        function rolarExpressao(expressao) {
+            const texto = String(expressao).replace(/\s+/g, '');
+
+            const formatoValido =
+                /^[+-]?(?:\d+d\d+|\d+)(?:[+-](?:\d+d\d+|\d+))*$/i;
+
+            if (!formatoValido.test(texto)) {
+                throw new Error('Expressão de dano inválida.');
+            }
+
+            const termos = texto.match(/[+-]?(?:\d+d\d+|\d+)/gi);
+            let total = 0;
+            const resultados = [];
+
+            for (const termo of termos) {
+                const sinal = termo.startsWith('-') ? -1 : 1;
+                const valor = termo.replace(/^[+-]/, '');
+                const dados = valor.match(/^(\d+)d(\d+)$/i);
+
+                if (dados) {
+                    const quantidade = Number(dados[1]);
+                    const faces = Number(dados[2]);
+
+                    if (
+                        quantidade < 1 ||
+                        quantidade > 100 ||
+                        faces < 2 ||
+                        faces > 1000
+                    ) {
+                        throw new Error('Quantidade de dados ou faces fora do limite permitido.');
+                    }
+
+                    const rolagens = [];
+
+                    for (let i = 0; i < quantidade; i++) {
+                        rolagens.push(Math.floor(Math.random() * faces) + 1);
+                    }
+
+                    const subtotal = rolagens.reduce((soma, n) => soma + n, 0);
+                    const resultado = sinal * subtotal;
+
+                    total += resultado;
+
+                    resultados.push({
+                        expressao: termo,
+                        rolagens,
+                        subtotal: resultado
+                    });
+                } else {
+                    const numero = Number(valor);
+
+                    if (!Number.isSafeInteger(numero) || numero > 10000) {
+                        throw new Error('Modificador numérico inválido.');
+                    }
+
+                    const resultado = sinal * numero;
+                    total += resultado;
+
+                    resultados.push({
+                        expressao: termo,
+                        rolagens: [],
+                        subtotal: resultado
+                    });
+                }
+            }
+
+            return { total, resultados };
+        }
+
+        function formatarResultados(resultados) {
+            return resultados.map(item => {
+                if (item.rolagens.length === 0) {
+                    return `${item.expressao} = ${item.subtotal}`;
+                }
+
+                return `${item.expressao} [${item.rolagens.join(', ')}] = ${item.subtotal}`;
+            }).join('\n');
+        }
 
         // ---------- Discord ----------
 
