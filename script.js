@@ -2256,7 +2256,7 @@ function init() {
         initBonusDMG
     );
 
-
+    initDamageRoll()
     initBonusDMG();
 
 
