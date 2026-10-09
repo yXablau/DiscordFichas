@@ -114,12 +114,9 @@ app.post('/rolar', async (req, res) => {
 
         const mensagem = [
             `╔══════════════════════╗`,
-            `      🎲 **ROLAGEM**`,
+            ` 🎲 **${personagem}**`,
             `╚══════════════════════╝`,
-            ``,
-            `👤 **${personagem}**`,
             `⚔️ **${atributo}**`,
-            ``,
             `🎯 **Valor:** ${valorNumerico}`,
             `🎲 **Rolagem:** ${rolagem}`,
             `📜 **Total:** ${total}`
