@@ -19,6 +19,15 @@ const PORT = process.env.PORT || 3000;
 const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
 const DISCORD_CHANNEL_ID = process.env.DISCORD_CHANNEL_ID;
 
+const corsOptions = {
+    origin: [
+        'https://yxablau.github.io',
+        'https://discordfichas.xablau.blitz.cloud'
+    ],
+    methods: ['GET', 'POST', 'OPTIONS'],
+    allowedHeaders: ['Content-Type']
+};
+
 
 // ==================================================
 // Aplicação
@@ -42,7 +51,7 @@ const client = new Client({
 // Middlewares
 // ==================================================
 
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '..', 'public')));
 // ==================================================
