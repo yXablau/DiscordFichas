@@ -57,6 +57,7 @@ app.get('/health', (req, res) => {
         status: 'online'
     });
 });
+
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
 // ==================================================
