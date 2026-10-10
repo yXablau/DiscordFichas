@@ -7,7 +7,7 @@ import { initEquipamentos } from './equipamentos.js';
 import { initPericiasHabilidades } from './pericias-habilidades.js';
 import { initDamageRoll } from './rolagens.js';
 import { initImportacaoExportacao } from './importacao-exportacao.js';
-import { initWakeUp } from './js/api.js';
+import { initWakeUp } from './api.js';
 
 function init() {
     initFicha();                  // bônus de dano + atributos
