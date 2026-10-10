@@ -12,7 +12,8 @@ COPY discord-server/server.js ./server.js
 
 WORKDIR /app
 
-COPY index.html style.css script.js ./
+COPY index.html style.css ./
+COPY js/ ./js/
 
 ENV NODE_ENV=production
 ENV PORT=8080
