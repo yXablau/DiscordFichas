@@ -42,6 +42,13 @@ const client = new Client({
         GatewayIntentBits.Guilds
     ]
 });
+
+// ==================================================
+// Middlewares
+// ==================================================
+app.use(cors(corsOptions));
+app.use(express.json());
+
 // ==================================================
 // Saude
 // ==================================================
@@ -50,13 +57,6 @@ app.get('/health', (req, res) => {
         status: 'online'
     });
 });
-// ==================================================
-// Middlewares
-// ==================================================
-
-app.use(cors(corsOptions));
-app.use(express.json());
-
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
 // ==================================================
